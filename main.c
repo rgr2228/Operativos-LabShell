@@ -16,11 +16,12 @@ int main ()
   char ** items;
   int i, num, background;
   char expresion[TAM];
-
+while(1){
   printf ("udea-shell:$ ");
   fgets (expresion, TAM, stdin);
   printf("%s",expresion);
-/*
+
+
   num = separaItems (expresion, &items, &background);
 
   printf ("Numero de parametros: %d\n", num);
@@ -34,6 +35,6 @@ int main ()
 
     liberaItems (items);
   }
-*/
+}
   return 0;
 }
