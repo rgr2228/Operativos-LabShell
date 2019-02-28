@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "parser.h"
 
@@ -35,6 +36,15 @@ while(1){
 
     liberaItems (items);
   }
-}
+  else{
+    printf("No ha ingresado argumentos validos\n");
+  }
+
+  //código de función udea-pwd
+  /*if (getcwd(expresion, sizeof(expresion)) == NULL)
+      printf("Error");
+    else
+      printf("current working directory is: %s\n", expresion);
+  }*/
   return 0;
 }
