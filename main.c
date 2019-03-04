@@ -18,23 +18,18 @@ int main()
   char **items;
   int i, num, background;
   char expresion[TAM];
+
+  char path[25]="/bin/";
   while (1)
   {
-    printf("udea-shell:$ ");
+    printf("\nudea-shell:$ ");
     fgets(expresion, TAM, stdin);
-    printf("%s", expresion);
 
     num = separaItems(expresion, &items, &background);
 
-    printf("Numero de parametros: %d\n", num);
 
     if (num > 0)
     {
-      for (i = 0; i < num; i++)
-        printf("%d \"%s\"\n", i + 1, items[i]);
-
-      printf("Background: %d\n", background);
-
       if (strcmp(items[0], "udea-pwd") == 0)
       {
         if (getcwd(expresion, sizeof(expresion)) == NULL)
@@ -46,6 +41,7 @@ int main()
       {
         for (i = 1; i < num; i++)
           printf("%s ", items[i]);
+        printf("\n");
       }
       if (strcmp(items[0], "udea-time") == 0)
       {
@@ -62,52 +58,41 @@ int main()
         printf("\033[H\033[J");
       }
       if(strcmp(items[0], "udea-cd") == 0){
-        char temp[sizeof(items[1])];
-        strcat(temp, items[1]);
-        if (getcwd(expresion, sizeof(expresion)) == NULL)
-          printf("Error Tratando de acceder al directorio");
-        else{
-          char path[sizeof(expresion) + sizeof(items[1])];
-          printf("temp:%s\n",temp);
-          strcat(path, expresion);
-          strcat(path, temp);
-          printf("expresion:%s\n",expresion);
-          printf("%s\n",path);
-          chdir(path);
+        char s[100];
+        printf("%s\n", getcwd(s, 100));
+        chdir(items[1]);
+        printf("%s\n", getcwd(s, 100)); 
+      }
+      else{        
+        int estado;
+        pid_t chid;
+        int ret;
+        if((chid = fork()) == 0){
+          char *args[num+1];
+          strcat(path,items[0]);
+          args[0] = path;
+          for(int i=1;i<num;i++){
+            args[i]=items[i];
+            printf("%s",items[i]);
+            printf("\n%s",args[i]);
+          }
+          args[num]= NULL;
+          ret = execv(path,args); 
+          if(ret<0){
+          printf("Ha ocurrido un error ejecutando el programa\n");
+        }
+          printf("ret= %d",ret);
+          liberaItems(args);
+        }
+        if(!background){
+          wait(&estado);
         }
       }
-      
     }
     else
     {
       printf("No ha ingresado argumentos validos\n");
     }
-
-    //código de función udea-pwd
-    /*if (getcwd(expresion, sizeof(expresion)) == NULL)
-      printf("Error");
-    else
-      printf("current working directory is: %s\n", expresion);
-      */
-
-    //código de función udea-echo
-    /*
-  if(strcmp(items[0], "udea-echo")==0){
-    printf("%s\n",items[1]);
-  }*/
-
-    //código de función udea-time
-    /*
-  time_t rawtime;
-  struct tm * timeinfo;
-  time ( &rawtime );
-  timeinfo = localtime ( &rawtime );
-  printf ("La hora es: %s",asctime(timeinfo));
-  */
-
-    //código de función udea-exit
-    //exit(0);
-
     liberaItems(items);
   }
 
